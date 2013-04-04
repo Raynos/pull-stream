@@ -1,15 +1,37 @@
 # pull-stream
 
-[![build status][1]][2] [![dependency status][3]][4]
+<!-- [![build status][1]][2] [![dependency status][3]][4]
 
-[![browser support][5]][6]
+[![browser support][5]][6] -->
 
 Idea for pull streams
 
 ## Example
 
 ```js
+var ones = function (abort, callback) {
+    callback(null, 1)
+}
 
+var sink = function () {
+    return function (stream) {
+        stream(null, function log(err, value) {
+            console.log("(", err, ", ", value, ")")
+
+            stream(null, log)
+        })
+    }
+}
+
+var double = function (source) {
+    return function (abort, callback) {
+        source(abort, function (err, value) {
+            callback(err, err ? null : value * 2)
+        })
+    }
+}
+
+sink(double(ones))
 ```
 
 ## Installation
